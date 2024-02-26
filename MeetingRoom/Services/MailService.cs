@@ -1,4 +1,5 @@
-﻿using System.Net.Mail;
+﻿using System.Net;
+using System.Net.Mail;
 
 namespace MeetingRoom.Services
 {
@@ -6,30 +7,37 @@ namespace MeetingRoom.Services
     {
         private readonly string _mailTo = string.Empty;
         private readonly string _mailFrom = string.Empty;
+        private readonly string _userSMTP = string.Empty;
+        private readonly string _passSMTP = string.Empty;
+        private readonly string _urlSMTP = string.Empty;
+        private readonly int _portSMTP;
 
 
         public MailService(IConfiguration configuration)
         {
             _mailTo = configuration["mailSettings:mailToAddress"];
             _mailFrom = configuration["mailSettings:mailFromAddress"];
+            _userSMTP = configuration["smtpCredential:user"];
+            _passSMTP = configuration["smtpCredential:password"];
+            _urlSMTP = configuration["smtpConfig:url"];
+            _portSMTP =int.Parse(configuration["smtpConfig:port"]);
         }
 
-        public void Send(string subject, string message)
+        public void HostSend(string subject, string message)
         {
             var mailMessage = new MailMessage
             {
+                From = new MailAddress(_mailFrom),
                 Subject = subject,
                 Body = message,
-                From = new MailAddress(_mailFrom),
             };
 
             mailMessage.To.Add(_mailTo);
 
-            var client = new SmtpClient
+            var client = new SmtpClient(_urlSMTP, _portSMTP)
             {
-                Host = "gty",
-                Port = 587,
-                Credentials = new System.Net.NetworkCredential(),
+                Credentials = new NetworkCredential(_userSMTP, _passSMTP),
+                EnableSsl = true
             };
 
             client.Send(mailMessage);
@@ -43,23 +51,22 @@ namespace MeetingRoom.Services
 
         public void CustomerSend(string subject, string message, string customerMail) 
         {
-            var mailMessage = new MailMessage
+            var mailHost = new MailMessage
             {
+                From = new MailAddress(_mailFrom),
                 Subject = subject,
                 Body = message,
-                From = new MailAddress(_mailFrom),
             };
 
-            mailMessage.To.Add(customerMail);
+            mailHost.To.Add(customerMail);
 
-            var client = new SmtpClient
+            var mailClient = new SmtpClient(_urlSMTP, _portSMTP)
             {
-                Host = "gty",
-                Port = 587,
-                Credentials = new System.Net.NetworkCredential(),
+                Credentials = new NetworkCredential(_userSMTP, _passSMTP),
+                EnableSsl = true
             };
 
-            client.Send(mailMessage);
+            mailClient.Send(mailHost);
 
             /*
             Console.WriteLine($"Mail from {_mailFrom} to {customerMail}");

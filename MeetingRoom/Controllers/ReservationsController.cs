@@ -97,12 +97,12 @@ public class ReservationsController : ControllerBase
         reservation = _mapper.Map<ReservationDto>(entity);
 
 
-        //_mailService.Send("Room Reservation",
-        //    $"User {userEntities.UserName} has Reserved the room {roomEntities.Name}, in {entity.Date} from {entity.StartTime} to {entity.EndTime}.");
+        _mailService.HostSend("Room Reservation",
+            $"User {userEntities.UserName} has Reserved the room {roomEntities.Name}, in {entity.Date} from {entity.StartTime} to {entity.EndTime}.");
 
-        //_mailService.CustomerSend("Room Reservation",
-        //    $"Dear {userEntities.UserName}, your request for your reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime} has been confirmed.",
-        //    userEntities.MailAddres);
+        _mailService.CustomerSend("Room Reservation",
+            $"Dear {userEntities.UserName}, your request for your reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime} has been confirmed.",
+            userEntities.MailAddres);
 
         return Ok(reservation);
     }
@@ -162,12 +162,12 @@ public class ReservationsController : ControllerBase
         
         await _reservationInfoRepository.SaveChangesAsync();
 
-        //_mailService.Send("Reservation Deleted",
-        //    $"User {userEntities.UserName} has deleted the Reservation {ReservationId}, in {reservationEntity.Date}.");
+        _mailService.HostSend("Reservation Deleted",
+            $"User {userEntities.UserName} has deleted the Reservation {ReservationId}, in {reservationEntity.Date}.");
 
-        //_mailService.CustomerSend("Reservation Deleted",
-        //    $"Dear {userEntities.UserName}, your deletion request for your reservation in {reservationEntity.Date} has been confirmed.",
-        //    userEntities.MailAddres);
+        _mailService.CustomerSend("Reservation Deleted",
+            $"Dear {userEntities.UserName}, your deletion request for your reservation in {reservationEntity.Date} has been confirmed.",
+            userEntities.MailAddres);
 
         return NoContent();
     }

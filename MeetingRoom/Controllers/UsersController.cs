@@ -99,7 +99,7 @@ public class UsersController : ControllerBase
 
         await _reservationInfoRepository.SaveChangesAsync();
 
-        _mailService.Send("User Deleted", 
+        _mailService.HostSend("User Deleted", 
             $"User {userEntities.UserName} with Id: {userEntities.Id} has been deleted.");
 
         _mailService.CustomerSend("User Deleted",
