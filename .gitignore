@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /MeetingRoom/appsettings.Credentials.json
 /MeetingRoom/appsettings.json
+/MeetingRoom/appsettings.Development.json
