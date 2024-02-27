@@ -67,10 +67,16 @@ public class ReservationsController : ControllerBase
         var reservationByDate = (await _reservationInfoRepository.GetReservationsAsync())
             .Where(r => r.Date == reservation.Date && r.RoomId == reservation.RoomId);
 
-        //var reservationByDate2 = (reservationByDate.Any(r => reservation.EndTime <= r.StartTime ^ r.EndTime <= reservation.StartTime));
-        //if (reservationByDate.IsNullOrEmpty() || !reservationByDate2)
+        //if (!reservationByDate.IsNullOrEmpty())
         //{
-        //    return BadRequest("gnaaaa");
+        //    var reservationByDate2 = (reservationByDate.Any(r => (reservation.EndTime <= r.StartTime ^ r.EndTime <= reservation.StartTime )|| 
+        //        (r.StartTime > reservation.StartTime && r.StartTime < reservation.EndTime)));
+        //    var ciccio = reservationByDate.Any(r => reservation.EndTime <= r.StartTime);
+        //    var pasticcio = reservationByDate.Any(r => r.EndTime <= reservation.StartTime);
+        //    if (!reservationByDate2) 
+        //    {
+        //        return BadRequest("Fanculo");
+        //    }
         //}
 
         var overlappingReservationStart = reservationByDate.Any(r => reservation.StartTime >= r.StartTime && reservation.StartTime <= r.EndTime && reservation.StartTime != r.EndTime);

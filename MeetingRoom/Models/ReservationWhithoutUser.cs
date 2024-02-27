@@ -9,8 +9,5 @@
         
         public int RoomId { get; set; }
 
-        //public ICollection<RoomDto> Room { get; set; }
-        //     = new List<RoomDto>();
-
     }
 }
