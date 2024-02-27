@@ -27,7 +27,9 @@ namespace MeetingRoom.Services
         
         public async Task<Reservation?> GetReservationAsync(int reservationId)
         {
+
             var query = _context.Reservations.AsQueryable();
+
 
             return await query
                 .FirstOrDefaultAsync(r => r.Id == reservationId);

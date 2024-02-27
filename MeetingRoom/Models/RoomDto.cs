@@ -17,9 +17,10 @@ namespace MeetingRoom.Models
                 return Reservations.Count;
             }
         }
-       
 
-        public ICollection<ReservationDto>? Reservations { get; set; }
+
+        public ICollection<ReservationWhithoutUsersRooms> Reservations { get; set; }
+            = new List<ReservationWhithoutUsersRooms>();
 
     }
 }

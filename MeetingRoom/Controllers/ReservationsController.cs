@@ -34,10 +34,10 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ReservationWhithoutUsersRooms>> GetReservations()
+    public async Task<ActionResult<ReservationWhithoutUser>> GetReservations()
     {
         var reservationEntities = await _reservationInfoRepository.GetReservationsAsync();
-        return Ok(_mapper.Map<IEnumerable<ReservationWhithoutUsersRooms>>(reservationEntities));
+        return Ok(_mapper.Map<IEnumerable<ReservationWhithoutUser>>(reservationEntities));
     }
 
     [HttpGet("{reservationId}", Name = "GetReservation")]
@@ -45,9 +45,16 @@ public class ReservationsController : ControllerBase
     {
         var reservation = await _reservationInfoRepository.GetReservationAsync(reservationId);
 
+        var roomName = (await _reservationInfoRepository.GetRoomAsync(reservation.RoomId)).Name;
+
+        var userName = (await _reservationInfoRepository.GetUserAsync(reservation.UserId)).UserName;
+
         if (reservation == null) return NotFound(reservation);
 
-        var exitReservation = _mapper.Map<ReservationWhithoutUsersRooms>(reservation);
+        var exitReservation = _mapper.Map<ReservationWithNames>(reservation);
+
+        exitReservation.RoomName = roomName;
+        exitReservation.UserName = userName;
 
         return Ok(exitReservation);
     }
@@ -55,6 +62,8 @@ public class ReservationsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ReservationDto>> PostReservation(ReservationDto reservation)
     {
+        
+
         var reservationByDate = (await _reservationInfoRepository.GetReservationsAsync())
             .Where(r => r.Date == reservation.Date && r.RoomId == reservation.RoomId);
 
@@ -103,6 +112,10 @@ public class ReservationsController : ControllerBase
             return BadRequest("The room does not exist!");
         }
 
+        var roomName = (await _reservationInfoRepository.GetRoomAsync(reservation.RoomId)).Name;
+
+        var userName = (await _reservationInfoRepository.GetUserAsync(reservation.UserId)).UserName;
+
         var entity = _mapper.Map<Reservation>(reservation);
 
         _reservationInfoRepository.AddReservation(entity);
@@ -114,7 +127,10 @@ public class ReservationsController : ControllerBase
 
         await _reservationInfoRepository.SaveChangesAsync();
 
-        reservation = _mapper.Map<ReservationDto>(entity);
+        var finalReservation = _mapper.Map<ReservationWithNames>(entity);
+
+        finalReservation.RoomName = roomName;
+        finalReservation.UserName = userName;
 
 
         //_mailService.HostSend("Room Reservation",
@@ -124,7 +140,7 @@ public class ReservationsController : ControllerBase
         //    $"Dear {userEntities.UserName}, your request for your reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime} has been confirmed.",
         //    userEntities.MailAddres);
 
-        return Ok(reservation);
+        return Ok(finalReservation);
     }
 
     [HttpPatch ("{reservationId}")]
@@ -205,8 +221,10 @@ public class ReservationsController : ControllerBase
 
         await _reservationInfoRepository.SaveChangesAsync();
 
+        var exitReservation = _mapper.Map<ReservationWithNames>(reservationEntity);
 
-        var exitReservation = _mapper.Map<ReservationDto>(reservationEntity);
+        exitReservation.UserName = userEntities.UserName;
+        
 
         //_mailService.HostSend("Change Room Reservation",
         //   $"User {userEntities.UserName} has changed his reservation from room: {roomEntities.Name}, in: {reservationMail.Date} from: {reservationMail.StartTime} to: {reservationMail.EndTime} " +

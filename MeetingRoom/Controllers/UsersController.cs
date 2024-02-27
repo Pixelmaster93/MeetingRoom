@@ -63,12 +63,7 @@ public class UsersController : ControllerBase
 
         await _reservationInfoRepository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetUser",
-            new
-            {
-                userId = user.Id
-            },
-            user);
+        return Ok(_mapper.Map<UserWithoutReservations>(user));
     }
 
     [HttpDelete("{userId}")]

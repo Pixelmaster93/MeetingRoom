@@ -7,8 +7,10 @@
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set;}
         
-        public ICollection<RoomDto> Room { get; set; }
-             = new List<RoomDto>();
+        public int RoomId { get; set; }
+
+        //public ICollection<RoomDto> Room { get; set; }
+        //     = new List<RoomDto>();
 
     }
 }

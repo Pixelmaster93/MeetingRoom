@@ -12,7 +12,9 @@ namespace MeetingRoom.Profiles
             CreateMap<Reservation, ReservationWhithoutUsersRooms>();
             CreateMap<Reservation, ReservationWhithoutUser>();
             CreateMap<Reservation, ReservationWhithoutRoom>();
+            CreateMap<Reservation, ReservationWithNames>();
             CreateMap<ReservationDto, Reservation>();
+
 
             CreateMap<ReservationWhithoutUser, Reservation>();
             CreateMap<ReservationWhithoutRoom, Reservation>();
