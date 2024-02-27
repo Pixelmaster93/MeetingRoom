@@ -1,9 +1,6 @@
-using MeetingRoom;
 using MeetingRoom.DbContexts;
 using MeetingRoom.Services;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Serilog;
 using System.Text.Json.Serialization;
 
 
@@ -22,10 +19,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IMailService, MailService>();
-
-
-
-//builder.Services.AddSingleton<RoomsDataStore>();
 
 builder.Services.AddDbContext<RoomReservationInfoContext>(
     dbContextOptions => dbContextOptions

@@ -69,25 +69,33 @@ public class ReservationsController : ControllerBase
 
         //if (!reservationByDate.IsNullOrEmpty())
         //{
-        //    var reservationByDate2 = (reservationByDate.Any(r => (reservation.EndTime <= r.StartTime ^ r.EndTime <= reservation.StartTime )|| 
-        //        (r.StartTime > reservation.StartTime && r.StartTime < reservation.EndTime)));
-        //    var ciccio = reservationByDate.Any(r => reservation.EndTime <= r.StartTime);
-        //    var pasticcio = reservationByDate.Any(r => r.EndTime <= reservation.StartTime);
-        //    if (!reservationByDate2) 
+        //    var reservationByDate2 = (reservationByDate.All(r => reservation.EndTime < r.StartTime ^ r.EndTime < reservation.StartTime));
+        //    if (!reservationByDate2)
         //    {
         //        return BadRequest("Fanculo");
         //    }
         //}
 
-        var overlappingReservationStart = reservationByDate.Any(r => reservation.StartTime >= r.StartTime && reservation.StartTime <= r.EndTime && reservation.StartTime != r.EndTime);
-        var overlappingReservationEnd = reservationByDate.Any(r => reservation.EndTime >= r.StartTime && reservation.EndTime <= r.EndTime && reservation.EndTime != r.StartTime);
-        var overlappingReservation = reservationByDate.Any(r => r.StartTime > reservation.StartTime && r.StartTime < reservation.EndTime);
-        var overlapping = reservationByDate.Any(r => reservation.StartTime == r.StartTime && reservation.EndTime == r.EndTime);
+        //var overlappingReservationStart = reservationByDate.Any(r => reservation.StartTime >= r.StartTime && reservation.StartTime <= r.EndTime && reservation.StartTime != r.EndTime);
+        //var overlappingReservationEnd = reservationByDate.Any(r => reservation.EndTime >= r.StartTime && reservation.EndTime <= r.EndTime && reservation.EndTime != r.StartTime);
+        //var overlappingReservation = reservationByDate.Any(r => r.StartTime > reservation.StartTime && r.StartTime < reservation.EndTime);
+        //var overlapping = reservationByDate.Any(r => reservation.StartTime == r.StartTime && reservation.EndTime == r.EndTime);
 
-        if (overlappingReservationStart || overlappingReservationEnd || overlappingReservation || overlapping)
+        //if (overlappingReservationStart || overlappingReservationEnd || overlappingReservation || overlapping)
+        //{
+        //    return BadRequest("Occupato!");
+        //}
+        var overlapping = reservationByDate.Any(r =>
+            (reservation.StartTime >= r.StartTime && reservation.StartTime <= r.EndTime && reservation.StartTime != r.EndTime) ||
+            (reservation.EndTime >= r.StartTime && reservation.EndTime <= r.EndTime && reservation.EndTime != r.StartTime) ||
+            (r.StartTime > reservation.StartTime && r.StartTime < reservation.EndTime) ||
+            (reservation.StartTime == r.StartTime && reservation.EndTime == r.EndTime));
+
+        if (overlapping)
         {
-            return BadRequest("Occupato!");
+            return BadRequest("Occupato!🍍");
         }
+
 
         if (reservation.Date < DateOnly.FromDateTime(DateTime.Today))
         {

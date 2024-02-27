@@ -60,19 +60,6 @@ namespace MeetingRoom.Services
             return await _context.Rooms.OrderBy(r => r.Id).ToListAsync();
         }
 
-        //public async Task<Room?> GetRoomAsync(int roomId, bool includeReservations = false)
-        //{
-
-        //    if (includeReservations)
-        //    {
-        //        return await _context.Rooms.Include(r => r.Reservations)
-        //            .Where(r => r.Id == roomId).FirstOrDefaultAsync();
-        //    }
-
-        //    return await _context.Rooms
-        //        .Where(r => r.Id == roomId).FirstOrDefaultAsync();
-        //}
-
         public async Task<Room?> GetRoomAsync(int roomId, bool includeReservations = false)
         {
             var query = _context.Rooms.AsQueryable();
@@ -144,12 +131,5 @@ namespace MeetingRoom.Services
         {
             return (await _context.SaveChangesAsync() >= 0);
         }
-
-        
     }
-
-    //public async Task<IEnumerable<Room>> GetRoomsAsync()
-    //{
-    //    return await _context.Rooms.OrderBy(r => r.Id).ToListAsync();
-    //}
 }

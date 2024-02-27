@@ -4,7 +4,7 @@ namespace MeetingRoom.Models
 {
     public class UserForCreationDto
     {
-        [Required(ErrorMessage = "You should provide a name value!")] //Il NOME deve essere per forza presenete, nel caso uscirà l'errore di ErrorMessage!
+        [Required(ErrorMessage = "You should provide a name value!")] 
         [MaxLength(15)] // Lunghezza masssima del nome
         public string UserName { get; set; } = string.Empty;
 

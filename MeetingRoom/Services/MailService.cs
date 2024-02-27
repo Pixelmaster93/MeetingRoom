@@ -41,12 +41,6 @@ namespace MeetingRoom.Services
             };
 
             client.Send(mailMessage);
-            /*
-            Console.WriteLine($"Mail from {_mailFrom} to {_mailTo}, " +
-                $"with {nameof(MailService)}.");
-            Console.WriteLine($"Subject: {subject}");
-            Console.WriteLine($"Message: {message}");
-            */
         }
 
         public void CustomerSend(string subject, string message, string customerMail) 
@@ -67,12 +61,6 @@ namespace MeetingRoom.Services
             };
 
             mailClient.Send(mailHost);
-
-            /*
-            Console.WriteLine($"Mail from {_mailFrom} to {customerMail}");
-            Console.WriteLine($"Subject: {subject}");
-            Console.WriteLine($"Message: {message}");
-            */
         }
 
     }

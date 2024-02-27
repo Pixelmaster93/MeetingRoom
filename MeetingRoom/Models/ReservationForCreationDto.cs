@@ -5,13 +5,13 @@ namespace MeetingRoom.Models
 {
     public class ReservationForCreationDto
     {
-        [Required(ErrorMessage = "You should provide a valid date!")] //Il NOME deve essere per forza presenete, nel caso uscirà l'errore di ErrorMessage!
+        [Required(ErrorMessage = "You should provide a valid date!")]
         public string Date { get; set; }
 
         [Required(ErrorMessage = "You should provide a start of metting valid!")]
         public string StartTime { get; set; }
 
-        [Required(ErrorMessage = "You should provide an end of metting valid!")] //Il NOME deve essere per forza presenete, nel caso uscirà l'errore di ErrorMessage!
+        [Required(ErrorMessage = "You should provide an end of metting valid!")]
         public string EndTime { get; set; }
     }
 }
