@@ -51,6 +51,17 @@ public class UsersController : ControllerBase
 
         if (includeReservations)
         {
+            int pageSize = 10;
+
+            int numberOfPages = (int)Math.Ceiling((double)userEntities
+                .NumbersOfReservation / pageSize);
+
+
+            //for ( int page = 1; page < numberOfPages; page++ )
+            //{
+                
+            //}
+
             return Ok(_mapper.Map<UserDto>(userEntities));
         }
         return Ok(_mapper.Map<UserWithoutReservations>(userEntities));

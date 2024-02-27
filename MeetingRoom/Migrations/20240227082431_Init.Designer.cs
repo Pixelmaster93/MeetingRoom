@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetingRoom.Migrations
 {
     [DbContext(typeof(RoomReservationInfoContext))]
-    [Migration("20240223205301_Init")]
+    [Migration("20240227082431_Init")]
     partial class Init
     {
         /// <inheritdoc />

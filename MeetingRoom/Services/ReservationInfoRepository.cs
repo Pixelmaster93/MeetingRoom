@@ -16,7 +16,7 @@ namespace MeetingRoom.Services
 
         public async Task<IEnumerable<Reservation>> GetReservationsAsync()
         {
-            return await _context.Reservations.OrderBy(r => r.Id).ToListAsync();
+            return await _context.Reservations.OrderBy(r => r.Date).ToListAsync();
         }
 
         public async Task<bool> ReservationExistsAsync(int reservationId)
@@ -113,6 +113,7 @@ namespace MeetingRoom.Services
             if (includeReservations)
             {
                 return await _context.Users.Include(r => r.Reservations)
+                    .Skip(10)
                     .Where(r => r.Id == userId).FirstOrDefaultAsync();
             }
 
