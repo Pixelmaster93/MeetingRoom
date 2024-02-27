@@ -39,10 +39,10 @@ public class UsersController : ControllerBase
 
     [HttpGet("{userId}", Name = "GetUser")]
     public async Task<ActionResult<UserDto>> GetUser(
-        int userId, bool includeReservations = false)
+        int userId, bool includeReservations = false, int pageNumber = 1)
     {
         //find Room
-        var userEntities = await _reservationInfoRepository.GetUserAsync(userId, includeReservations);
+        var userEntities = await _reservationInfoRepository.GetUserAsync(userId, includeReservations, pageNumber-1);
 
         if (userEntities == null)
         {
@@ -51,17 +51,6 @@ public class UsersController : ControllerBase
 
         if (includeReservations)
         {
-            int pageSize = 10;
-
-            int numberOfPages = (int)Math.Ceiling((double)userEntities
-                .NumbersOfReservation / pageSize);
-
-
-            //for ( int page = 1; page < numberOfPages; page++ )
-            //{
-                
-            //}
-
             return Ok(_mapper.Map<UserDto>(userEntities));
         }
         return Ok(_mapper.Map<UserWithoutReservations>(userEntities));
@@ -70,8 +59,6 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UserDto>> CreateUser(User user)
     {
-        //user.Id = (await _reservationInfoRepository.GetUsersAsync()).Max(r => r.Id)+1;
-
         _reservationInfoRepository.CreateUserAsync(user);
 
         await _reservationInfoRepository.SaveChangesAsync();

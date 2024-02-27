@@ -152,6 +152,17 @@ public class ReservationsController : ControllerBase
         var reservationByDate = (await _reservationInfoRepository.GetReservationsAsync())
              .Where(r => r.Date == reservation.Date && r.RoomId == reservation.RoomId && r.Id != reservationId);
 
+        //var overlapping = reservationByDate.Any(r =>
+        //    (reservation.StartTime >= r.StartTime && reservation.StartTime <= r.EndTime && reservation.StartTime != r.EndTime) ||
+        //    (reservation.EndTime >= r.StartTime && reservation.EndTime <= r.EndTime && reservation.EndTime != r.StartTime) ||
+        //    (r.StartTime > reservation.StartTime && r.StartTime < reservation.EndTime) ||
+        //    (reservation.StartTime == r.StartTime && reservation.EndTime == r.EndTime));
+
+        //if (overlapping)
+        //{
+        //    return BadRequest("Occupato!");
+        //}
+
         var overlappingReservationStart = reservationByDate.Any(r => reservation.StartTime >= r.StartTime && reservation.StartTime <= r.EndTime && reservation.StartTime != r.EndTime);
         var overlappingReservationEnd = reservationByDate.Any(r => reservation.EndTime >= r.StartTime && reservation.EndTime <= r.EndTime && reservation.EndTime != r.StartTime);
         var overlappingReservation = reservationByDate.Any(r => r.StartTime > reservation.StartTime && r.StartTime < reservation.EndTime);

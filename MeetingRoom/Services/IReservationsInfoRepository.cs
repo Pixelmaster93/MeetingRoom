@@ -23,7 +23,8 @@ namespace MeetingRoom.Services
         Task<IEnumerable<User>> GetUsersAsync();
         Task<User?> GetUserAsync(
             int userId,
-            bool includeReservations = false);
+            bool includeReservations = false,
+            int pageNumber = 0);
         Task<bool> UserExistsAsync(int userId);
         void CreateUserAsync (User user);
         void DeleteUser(User user);

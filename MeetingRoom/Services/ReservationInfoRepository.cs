@@ -107,13 +107,12 @@ namespace MeetingRoom.Services
             return await _context.Users.OrderBy(r => r.Id).ToListAsync();
         }
 
-        public async Task<User?> GetUserAsync(int userId, bool includeReservations = false)
+        public async Task<User?> GetUserAsync(int userId, bool includeReservations = false, int pageNumber = 0)
         {
 
             if (includeReservations)
             {
-                return await _context.Users.Include(r => r.Reservations)
-                    .Skip(10)
+                return await _context.Users.Include(r => r.Reservations.Skip(10* pageNumber).Take(10))
                     .Where(r => r.Id == userId).FirstOrDefaultAsync();
             }
 
