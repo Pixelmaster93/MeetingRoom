@@ -24,6 +24,7 @@ namespace MeetingRoom.Services
         Task<User?> GetUserAsync(
             int userId,
             bool includeReservations = false,
+            bool filterReservationByData = true,
             int pageNumber = 0);
         Task<bool> UserExistsAsync(int userId);
         void CreateUserAsync (User user);

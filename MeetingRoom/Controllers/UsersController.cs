@@ -39,10 +39,9 @@ public class UsersController : ControllerBase
 
     [HttpGet("{userId}", Name = "GetUser")]
     public async Task<ActionResult<UserDto>> GetUser(
-        int userId, bool includeReservations = false, int pageNumber = 1)
+        int userId, bool includeReservations = false, bool filterReservationByData = true, int pageNumber = 1)
     {
-        //find Room
-        var userEntities = await _reservationInfoRepository.GetUserAsync(userId, includeReservations, pageNumber-1);
+        var userEntities = await _reservationInfoRepository.GetUserAsync(userId, includeReservations, filterReservationByData, pageNumber-1);
 
         if (userEntities == null)
         {
@@ -53,6 +52,7 @@ public class UsersController : ControllerBase
         {
             return Ok(_mapper.Map<UserDto>(userEntities));
         }
+
         return Ok(_mapper.Map<UserWithoutReservations>(userEntities));
     }
 
@@ -62,6 +62,14 @@ public class UsersController : ControllerBase
         _reservationInfoRepository.CreateUserAsync(user);
 
         await _reservationInfoRepository.SaveChangesAsync();
+
+        //_mailService.HostSend("User Created",
+        //    $"User {user.UserName} with Id: {user.Id}, mail: {user.MailAddres} and phone number: {user.PhoneNumber} has been created.");
+
+        //_mailService.CustomerSend("User Created",
+        //    $"Dear {user.UserName}, your creation request has been confirmed." +
+        //    $"Your Id for the login is: {user.Id}",
+        //    user.MailAddres);
 
         return Ok(_mapper.Map<UserWithoutReservations>(user));
     }
@@ -92,12 +100,12 @@ public class UsersController : ControllerBase
 
         await _reservationInfoRepository.SaveChangesAsync();
 
-        _mailService.HostSend("User Deleted", 
-            $"User {userEntities.UserName} with Id: {userEntities.Id} has been deleted.");
+        //_mailService.HostSend("User Deleted", 
+        //    $"User {userEntities.UserName} with Id: {userEntities.Id} has been deleted.");
 
-        _mailService.CustomerSend("User Deleted",
-            $"Dear {userEntities.UserName}, your deletion request has been confirmed.",
-            userEntities.MailAddres);
+        //_mailService.CustomerSend("User Deleted",
+        //    $"Dear {userEntities.UserName}, your deletion request has been confirmed.",
+        //    userEntities.MailAddres);
 
         return NoContent();
     }

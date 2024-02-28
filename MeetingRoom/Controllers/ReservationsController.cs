@@ -72,7 +72,7 @@ public class ReservationsController : ControllerBase
         //    var reservationByDate2 = (reservationByDate.All(r => reservation.EndTime < r.StartTime ^ r.EndTime < reservation.StartTime));
         //    if (!reservationByDate2)
         //    {
-        //        return BadRequest("Fanculo");
+        //        return BadRequest("Fanculo AntonioDioDegliDei");
         //    }
         //}
 
@@ -157,9 +157,13 @@ public class ReservationsController : ControllerBase
         //    $"The mail of the reservation has been sent to {reservationMail.InviteMails}.",
         //    userEntities.MailAddres);
 
-        //_mailService.CustomerSend("Room Reservation",
-        // $"{userEntities.UserName}, has invited you to join the reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime}.",
-        // reservationMail.InviteMails);
+        //if(reservationMail.InviteMails != null)
+        //{
+        //    _mailService.CustomerSend("Room Reservation",
+        //     $"{userEntities.UserName}, has invited you to join the reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime}.",
+        //     reservationMail.InviteMails);
+        //}
+
 
 
 
@@ -271,10 +275,13 @@ public class ReservationsController : ControllerBase
         //    $"Dear {userEntities.UserName}, your request for your reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime} has been confirmed.",
         //    userEntities.MailAddres);
 
-        //_mailService.CustomerSend("Room Reservation",
-        // $"{userEntities.UserName}, has modified the booked reservation for {reservationMail.Date} from {reservationMail.StartTime} to {reservationMail.EndTime} in a new reservation for " +
-        // $"{entity.Date} from {entity.StartTime} to {entity.EndTime}.",
-        // reservationMails.InviteMails);
+        //if (reservationMails.InviteMails != null)
+        //{
+        //    _mailService.CustomerSend("Room Reservation",
+        //     $"{userEntities.UserName}, has modified the booked reservation for {reservationMail.Date} from {reservationMail.StartTime} to {reservationMail.EndTime} in a new reservation for " +
+        //     $"{entity.Date} from {entity.StartTime} to {entity.EndTime}.",
+        //     reservationMails.InviteMails);
+        //}
 
 
         return Ok(exitReservation);
@@ -310,9 +317,9 @@ public class ReservationsController : ControllerBase
         //    $"Dear {userEntities.UserName}, your deletion request for your reservation in {reservationEntity.Date} has been confirmed.",
         //    userEntities.MailAddres);
 
-        //_mailService.CustomerSend("Reservation Deleted",
-        //    $"{userEntities.UserName} has deleted the reservation booked in {reservationEntity.Date}.",
-        //    userEntities.MailAddres);
+        ////_mailService.CustomerSend("Reservation Deleted",
+        ////    $"{userEntities.UserName} has deleted the reservation booked in {reservationEntity.Date}.",
+        ////    userEntities.MailAddres);
 
         return NoContent();
     }

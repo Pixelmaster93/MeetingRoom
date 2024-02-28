@@ -96,11 +96,19 @@ namespace MeetingRoom.Services
             return await _context.Users.OrderBy(r => r.Id).ToListAsync();
         }
 
-        public async Task<User?> GetUserAsync(int userId, bool includeReservations = false, int pageNumber = 0)
+
+        public async Task<User?> GetUserAsync(int userId, bool includeReservations = false, bool filterReservationByData = true,int pageNumber = 0)
         {
 
             if (includeReservations)
             {
+                if(filterReservationByData)
+                {
+                    return await _context.Users.Include(r => r.Reservations
+                    .Where(r => new DateTime(r.Date, r.StartTime) > DateTime.Now)
+                    .Skip(10 * pageNumber).Take(10))
+                    .Where(r => r.Id == userId).FirstOrDefaultAsync();
+                }
                 return await _context.Users.Include(r => r.Reservations.Skip(10* pageNumber).Take(10))
                     .Where(r => r.Id == userId).FirstOrDefaultAsync();
             }

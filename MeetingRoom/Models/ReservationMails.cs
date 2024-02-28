@@ -13,7 +13,7 @@ namespace MeetingRoom.Models
 
         public User? User { get; set; }
 
-        public string? InviteMails { get; set; }
+        public string? InviteMails { get; set; } = null;
 
         public int RoomId { get; set; }
         public int UserId { get; set; }
