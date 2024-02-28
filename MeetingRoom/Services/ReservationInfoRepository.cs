@@ -102,12 +102,22 @@ namespace MeetingRoom.Services
 
             if (includeReservations)
             {
-                if(filterReservationByData)
+                if (filterReservationByData)
                 {
-                    return await _context.Users.Include(r => r.Reservations
-                    .Where(r => new DateTime(r.Date, r.StartTime) > DateTime.Now)
+                    DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+
+                    TimeOnly hour = TimeOnly.FromDateTime(DateTime.Now);
+
+                    var date = await _context.Users.Include(r => r.Reservations
+                    .Where(r => r.Date > today)
                     .Skip(10 * pageNumber).Take(10))
                     .Where(r => r.Id == userId).FirstOrDefaultAsync();
+
+                    return await _context.Users.Include(r => r.Reservations
+                    .Where(r => r.Date > today && r.StartTime > hour)
+                    .Skip(10 * pageNumber).Take(10))
+                    .Where(r => r.Id == userId).FirstOrDefaultAsync();
+
                 }
                 return await _context.Users.Include(r => r.Reservations.Skip(10* pageNumber).Take(10))
                     .Where(r => r.Id == userId).FirstOrDefaultAsync();

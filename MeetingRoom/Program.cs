@@ -22,7 +22,7 @@ builder.Services.AddTransient<IMailService, MailService>();
 
 builder.Services.AddDbContext<RoomReservationInfoContext>(
     dbContextOptions => dbContextOptions
-    .UseSqlServer("Server=DAZ-WRK\\LOCALDB;Database=myDataBase;Trusted_Connection=True;Integrated Security=True;Encrypt=false"));
+    .UseSqlServer("Server=PIXELMASTER-MSI\\SQLEXPRESS;Database=myDataBase;Trusted_Connection=True;Integrated Security=True;Encrypt=false"));
 
 builder.Services.AddScoped<IReservationsInfoRepository, ReservationInfoRepository>();
 
