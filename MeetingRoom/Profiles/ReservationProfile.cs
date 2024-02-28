@@ -24,6 +24,8 @@ namespace MeetingRoom.Profiles
             CreateMap<Reservation, RoomDto>();
             CreateMap<ReservationDto, RoomDto>();
 
+            CreateMap<ReservationMails, ReservationDto>();
+
         }
     }
 }

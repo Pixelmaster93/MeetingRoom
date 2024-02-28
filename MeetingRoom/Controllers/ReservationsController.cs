@@ -29,7 +29,7 @@ public class ReservationsController : ControllerBase
         _mapper = mapper ??
             throw new ArgumentNullException(nameof(mapper));
 
-        _mailService = mailService ?? 
+        _mailService = mailService ??
             throw new ArgumentNullException(nameof(mailService));
     }
 
@@ -60,9 +60,9 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ReservationDto>> PostReservation(ReservationDto reservation)
+    public async Task<ActionResult<ReservationMails>> PostReservation(ReservationMails reservationMail)
     {
-        
+        var reservation = _mapper.Map<ReservationDto>(reservationMail);
 
         var reservationByDate = (await _reservationInfoRepository.GetReservationsAsync())
             .Where(r => r.Date == reservation.Date && r.RoomId == reservation.RoomId);
@@ -95,8 +95,10 @@ public class ReservationsController : ControllerBase
         {
             return BadRequest("Occupato!🍍");
         }
-
-
+        if (reservation.Date.DayOfWeek == DayOfWeek.Saturday || reservation.Date.DayOfWeek == DayOfWeek.Sunday)
+        {
+            return BadRequest("You can choose only a ferial day! 🍍");
+        }
         if (reservation.Date < DateOnly.FromDateTime(DateTime.Today))
         {
             return BadRequest("You should choose a future day!🍍");
@@ -109,7 +111,7 @@ public class ReservationsController : ControllerBase
         {
             return BadRequest("The end of the meeting can't be beafore the start!🍍");
         }
-        if(reservation.StartTime < openTime)
+        if (reservation.StartTime < openTime)
         {
             return BadRequest("Start time can't be before our opening.🍍");
         }
@@ -151,21 +153,39 @@ public class ReservationsController : ControllerBase
         //    $"User {userEntities.UserName} has Reserved the room {roomEntities.Name}, in {entity.Date} from {entity.StartTime} to {entity.EndTime}.");
 
         //_mailService.CustomerSend("Room Reservation",
-        //    $"Dear {userEntities.UserName}, your request for your reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime} has been confirmed.",
+        //    $"Dear {userEntities.UserName}, your request for your reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime} has been confirmed." +
+        //    $"The mail of the reservation has been sent to {reservationMail.InviteMails}.",
         //    userEntities.MailAddres);
+
+        //_mailService.CustomerSend("Room Reservation",
+        // $"{userEntities.UserName}, has invited you to join the reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime}.",
+        // reservationMail.InviteMails);
+
+
 
         return Ok(finalReservation);
     }
 
-    [HttpPatch ("{reservationId}")]
-    public async Task<ActionResult<ReservationDto>> UpdateReservation (int reservationId , ReservationDto reservation)
+    [HttpPatch("{reservationId}")]
+    public async Task<ActionResult<ReservationMails>> UpdateReservation(int reservationId, ReservationMails reservationMails)
     {
+
         var reservationMail = await _reservationInfoRepository.GetReservationAsync(reservationId);
 
-        if(reservationMail == null) 
+        if (reservationMail == null)
         {
             return NotFound();
         }
+
+        var windowBeforeEvent = TimeSpan.FromHours(24);
+
+        if (new DateTime(reservationMail.Date, reservationMail.StartTime) < DateTime.Now.Add(windowBeforeEvent))
+        {
+            return BadRequest("You can't modify your reservation 24 hourse before the booking.🍍");
+        }
+
+        var reservation = _mapper.Map<ReservationDto>(reservationMails);
+
         var roomEntities = await _reservationInfoRepository.GetRoomAsync(reservationMail.RoomId);
 
         var userEntities = await _reservationInfoRepository.GetUserAsync(reservationMail.UserId);
@@ -173,11 +193,6 @@ public class ReservationsController : ControllerBase
         var reservationEntity = await _reservationInfoRepository.GetReservationAsync(reservationId);
 
         var entity = _mapper.Map<Reservation>(reservation);
-
-        reservationEntity.StartTime = entity.StartTime;
-        reservationEntity.EndTime = entity.EndTime;
-        reservationEntity.Date = entity.Date;
-        reservationEntity.RoomId = entity.RoomId;
 
         var reservationByDate = (await _reservationInfoRepository.GetReservationsAsync())
              .Where(r => r.Date == reservation.Date && r.RoomId == reservation.RoomId && r.Id != reservationId);
@@ -198,47 +213,55 @@ public class ReservationsController : ControllerBase
         var overlappingReservation = reservationByDate.Any(r => r.StartTime > reservation.StartTime && r.StartTime < reservation.EndTime);
         var overlapping = reservationByDate.Any(r => reservation.StartTime == r.StartTime && reservation.EndTime == r.EndTime);
 
+    
         if (overlappingReservationStart || overlappingReservationEnd || overlappingReservation || overlapping)
         {
             return BadRequest("Occupato!");
         }
-
-        if (reservationEntity.Date < DateOnly.FromDateTime(DateTime.Today))
+        if (entity.Date.DayOfWeek == DayOfWeek.Saturday || entity.Date.DayOfWeek == DayOfWeek.Sunday)
+        {
+            return BadRequest("You can choose only a ferial day! 🍍");
+        }
+        if (entity.Date < DateOnly.FromDateTime(DateTime.Today))
         {
             return BadRequest("You should choose a future day!🍍");
         }
-        if (new DateTime(reservationEntity.Date, reservationEntity.StartTime) <= DateTime.Now)
+        if (new DateTime(entity.Date, entity.StartTime) <= DateTime.Now)
         {
             return BadRequest("You can't choose today for your meeting.🍍");
         }
-        if (reservationEntity.StartTime >= reservationEntity.EndTime)
+        if (entity.StartTime >= entity.EndTime)
         {
-            return BadRequest("The end of the meeting can't be beafore the start!🍍");
+            return BadRequest("The end of the meeting can't be before the start!🍍");
         }
-        if (reservationEntity.StartTime < openTime)
+        if (entity.StartTime < openTime)
         {
             return BadRequest("Start time can't be before our opening.🍍");
         }
-        if (reservationEntity.StartTime >= closeTime)
+        if (entity.StartTime >= closeTime)
         {
             return BadRequest("Start time can't be our closing time or later.🍍");
         }
-        if (reservationEntity.EndTime > closeTime)
+        if (entity.EndTime > closeTime)
         {
             return BadRequest("End time can't be after our closing.🍍");
         }
-
         if (await _reservationInfoRepository.RoomExistsAsync(entity.RoomId) == false)
         {
             return BadRequest("The room does not exist!");
         }
+
+        reservationEntity.Date = entity.Date;
+        reservationEntity.StartTime = entity.StartTime;
+        reservationEntity.EndTime = entity.EndTime;
+        reservationEntity.RoomId = entity.RoomId;
 
         await _reservationInfoRepository.SaveChangesAsync();
 
         var exitReservation = _mapper.Map<ReservationWithNames>(reservationEntity);
 
         exitReservation.UserName = userEntities.UserName;
-        
+
 
         //_mailService.HostSend("Change Room Reservation",
         //   $"User {userEntities.UserName} has changed his reservation from room: {roomEntities.Name}, in: {reservationMail.Date} from: {reservationMail.StartTime} to: {reservationMail.EndTime} " +
@@ -248,21 +271,36 @@ public class ReservationsController : ControllerBase
         //    $"Dear {userEntities.UserName}, your request for your reservation in {entity.Date} from {entity.StartTime} to {entity.EndTime} has been confirmed.",
         //    userEntities.MailAddres);
 
+        //_mailService.CustomerSend("Room Reservation",
+        // $"{userEntities.UserName}, has modified the booked reservation for {reservationMail.Date} from {reservationMail.StartTime} to {reservationMail.EndTime} in a new reservation for " +
+        // $"{entity.Date} from {entity.StartTime} to {entity.EndTime}.",
+        // reservationMails.InviteMails);
+
 
         return Ok(exitReservation);
-      
+
     }
 
     [HttpDelete]
     public async Task<ActionResult> DeleteReservation(int ReservationId)
     {
         var reservationEntity = await _reservationInfoRepository.GetReservationAsync(ReservationId);
+        if (reservationEntity == null)
+        {
+            return NotFound();
+        }
+        var windowBeforeEvent = TimeSpan.FromHours(24);
 
-        var userEntities = await _reservationInfoRepository.GetUserAsync(reservationEntity.UserId);
+        if (new DateTime(reservationEntity.Date, reservationEntity.StartTime) < DateTime.Now.Add(windowBeforeEvent))
+        {
+            return BadRequest("You can't delete your reservation 24 hourse before the booking.🍍");
+        }
+
+        //var userEntities = await _reservationInfoRepository.GetUserAsync(reservationEntity.UserId);
 
         _reservationInfoRepository.DeleteReservation(ReservationId);
 
-        
+
         await _reservationInfoRepository.SaveChangesAsync();
 
         //_mailService.HostSend("Reservation Deleted",
@@ -270,6 +308,10 @@ public class ReservationsController : ControllerBase
 
         //_mailService.CustomerSend("Reservation Deleted",
         //    $"Dear {userEntities.UserName}, your deletion request for your reservation in {reservationEntity.Date} has been confirmed.",
+        //    userEntities.MailAddres);
+
+        //_mailService.CustomerSend("Reservation Deleted",
+        //    $"{userEntities.UserName} has deleted the reservation booked in {reservationEntity.Date}.",
         //    userEntities.MailAddres);
 
         return NoContent();

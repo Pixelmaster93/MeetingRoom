@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MeetingRoom.Migrations
 {
     [DbContext(typeof(RoomReservationInfoContext))]
-    [Migration("20240227131152_Init")]
-    partial class Init
+    [Migration("20240228095353_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
